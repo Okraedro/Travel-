@@ -1,1 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Главная — Дневник путешествий{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-primary text-white py-5 mb-4 rounded">
+    <div class="container">
+        <h1 class="display-4">Дневник путешествий</h1>
+        <p class="lead">Записывайте свои приключения, делитесь впечатлениями и вдохновляйте других!</p>
+        <hr class="my-4">
+        <p>Создавайте записи о путешествиях с фото, геопозицией, стоимостью и отзывами.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">🌍 Ваши путешествия</h5>
+                <p class="card-text">Ведите личный дневник поездок: добавляйте фото, заметки, метки на карте и делитесь с друзьями.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">🗺️ Карта приключений</h5>
+                <p class="card-text">Смотрите, где побывали вы и другие путешественники. Отмечайте новые места на интерактивной карте.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">💬 Сообщество</h5>
+                <p class="card-text">Читайте истории других пользователей, оставляйте комментарии и вдохновляйтесь новыми маршрутами.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center my-5">
+    {% if 'user_id' not in session %}
+        <a href="{{ url_for('register') }}" class="btn btn-success btn-lg mx-2">
+            Регистрация
+        </a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg mx-2">
+            Войти
+        </a>
+    {% else %}
+        <a href="{{ url_for('add_trip') }}" class="btn btn-primary btn-lg mx-2">
+            Добавить путешествие
+        </a>
+        <a href="{{ url_for('my_trips') }}" class="btn btn-outline-light btn-lg mx-2">
+            Мои записи
+        </a>
+        <a href="{{ url_for('all_trips') }}" class="btn btn-outline-light btn-lg mx-2">
+            Все путешествия
+        </a>
+    {% endif %}
+</div>
+
+<section class="bg-light py-5 rounded">
+    <div class="container">
+        <h2 class="text-center mb-4">Как это работает?</h2>
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="display-6 mb-3">📝</div>
+                <h4>Добавьте путешествие</h4>
+                <p>Опишите маршрут, загрузите фото, укажите стоимость и отметьте место на карте.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="display-6 mb-3">🗺️</div>
+                <h4>Отметьте на карте</h4>
+                <p>Укажите точные координаты или выберите место на интерактивной карте Leaflet.</p>
+            </div>
+            <div class="col-md-4">
+                <div class="display-6 mb-3">💬</div>
+                <h4>Поделитесь с друзьями</h4>
+                <p>Другие пользователи увидят вашу запись и смогут оставить отзыв.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
 
