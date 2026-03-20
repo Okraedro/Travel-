@@ -18,16 +18,18 @@
     <div class="row">
         {% for trip in trips %}
             <!-- Карточка путешествия (как выше) -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    {% if trip.image_filename %}
-                <img src="{{ url_for('static', filename='uploads/' + trip.image_filename) }}"
-             class="card-img-top" alt="{{ trip.title }}" style="height: 200px; object-fit: cover;">
+            <a href="{{ url_for('view_trip', trip_id=trip.id) }}" class="text-decoration-none text-dark">
+                <div class="card h-100 trip-card">
+            <!-- содержимое карточки -->
+                </div>
+            </a>
+
             {% else %}
                 <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"
              style="height: 200px;">Фото не загружено</div>
             {% endif %}
             <div class="card-body">
+                
                 <h5 class="card-title">{{ trip.title }}</h5>
                 <p class="card-text">{{ trip.description|truncate(100) }}</p>
                 <p><strong>Автор:</strong> {{ trip.user.username }}</p>
