@@ -1,1 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить путешествие — Дневник путешествий{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Добавить новое путешествие</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                <label for="title" class="form-label">Название:</label>
+                <input type="text" class="form-control" id="title" name="title"
+                       required minlength="3" maxlength="200">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Описание:</label>
+                <textarea class="form-control" id="description" name="description"
+                          rows="5" placeholder="Расскажите о своём путешествии..."></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="cost" class="form-label">Стоимость (руб.):</label>
+                <input type="number" class="form-control" id="cost" name="cost"
+                       min="0" step="0.01" placeholder="Например, 15000.50">
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Фото места:</label>
+                <input class="form-control" type="file" id="image" name="image"
+                       accept="image/*">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Местоположение на карте:</label>
+                <div id="map" style="height: 400px; border: 1px solid #ddd;"></div>
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить путешествие</button>
+            <a href="{{ url_for('my_trips') }}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Инициализация карты Leaflet
+  const map = L.map('map').setView([55.751244, 37.618423], 5);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  let marker = L.marker([55.751244, 37.618423]).addTo(map);
+
+  map.on('click', function(e) {
+    marker.setLatLng(e.latlng);
+    document.getElementById('latitude').value = e.latlng.lat;
+    document.getElementById('longitude').value = e.latlng.lng;
+  });
+</script>
+{% endblock %}
 
