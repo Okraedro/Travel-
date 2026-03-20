@@ -61,3 +61,46 @@ def logout():
     session.pop('username', None)
     flash('Вы вышли из системы.')
     return redirect(url_for('index'))
+import os
+from werkzeug.utils import secure_filename
+
+
+@app.route('/add_trip', methods=['GET', 'POST'])
+def add_trip():
+    if 'user_id' not in session:
+        flash('Для добавления путешествия необходимо войти в систему.')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        title = request.form['title'].strip()
+        description = request.form['description']
+        cost = request.form.get('cost')
+        latitude = request.form.get('latitude')
+        longitude = request.form.get('longitude')
+
+        # Обработка изображения
+        image_file = request.files.get('image')
+        image_filename = None
+
+        if image_file and allowed_file(image_file.filename):
+            filename = secure_filename(image_file.filename)
+            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            image_filename = filename
+
+        # Создание записи о путешествии
+        trip = Trip(
+            title=title,
+            description=description,
+            user_id=session['user_id'],
+            cost=float(cost) if cost else None,
+            latitude=float(latitude) if latitude else None,
+            longitude=float(longitude) if longitude else None,
+            image_filename=image_filename
+        )
+        db.session.add(trip)
+        db.session.commit()
+
+        flash('Путешествие успешно добавлено!')
+        return redirect(url_for('my_trips'))
+
+    return render_template('add_trip.html')
