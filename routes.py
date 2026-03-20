@@ -186,3 +186,7 @@ def all_trips():
         pagination=trips,
         author_filter=author_filter
     )
+@app.route('/trip/<int:trip_id>')
+def view_trip(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    return render_template('view_trip.html', trip=trip)
