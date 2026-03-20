@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование путешествия — Дневник путешествий{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Редактирование путешествия: {{ trip.title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                <label for="title" class="form-label">Название:</label>
+                <input type="text" class="form-control" id="title" name="title"
+                       value="{{ trip.title }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Описание:</label>
+                <textarea class="form-control" id="description" name="description"
+                   rows="5">{{ trip.description }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="cost" class="form-label">Стоимость (руб.):</label>
+                <input type="number" class="form-control" id="cost" name="cost"
+                       value="{{ trip.cost }}" min="0" step="0.01">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Текущее фото:</label>
+                {% if trip.image_filename %}
+                    <img src="{{ url_for('static', filename='uploads/' + trip.image_filename) }}"
+                 class="img-thumbnail" style="max-height: 150px;">
+                {% else %}
+                    <p>Фото не загружено</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Загрузить новое фото:</label>
+                <input class="form-control" type="file" id="image" name="image" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            <a href="{{ url_for('my_trips') }}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
