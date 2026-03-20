@@ -106,3 +106,11 @@ def add_trip():
     return render_template('add_trip.html')
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+@app.route('/my_trips')
+def my_trips():
+    if 'user_id' not in session:
+        flash('Для просмотра путешествий необходимо войти в систему.')
+        return redirect(url_for('login'))
+
+    trips = Trip.query.filter_by(user_id=session['user_id']).order_by(Trip.created_at.desc()).all()
+    return render_template('my_trips.html', trips=trips)
