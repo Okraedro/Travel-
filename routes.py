@@ -114,3 +114,33 @@ def my_trips():
 
     trips = Trip.query.filter_by(user_id=session['user_id']).order_by(Trip.created_at.desc()).all()
     return render_template('my_trips.html', trips=trips)
+@app.route('/edit_trip/<int:trip_id>', methods=['GET', 'POST'])
+def edit_trip(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    if trip.user_id != session['user_id']:
+        flash('У вас нет прав для редактирования этого путешествия.')
+        return redirect(url_for('my_trips'))
+
+    if request.method == 'POST':
+        trip.title = request.form['title'].strip()
+        trip.description = request.form['description']
+        trip.cost = float(request.form['cost']) if request.form.get('cost') else None
+
+        # Обработка нового изображения
+        image_file = request.files.get('image')
+        if image_file and allowed_file(image_file.filename):
+            # Удаляем старое фото, если оно есть
+            if trip.image_filename:
+                old_path = os.path.join(app.config['UPLOAD_FOLDER'], trip.image_filename)
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+            # Сохраняем новое фото
+            filename = secure_filename(image_file.filename)
+            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            trip.image_filename = filename
+
+        db.session.commit()
+        flash('Путешествие успешно обновлено!')
+        return redirect(url_for('my_trips'))
+
+    return render_template('edit_trip.html', trip=trip)
