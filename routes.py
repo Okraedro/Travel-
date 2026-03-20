@@ -55,3 +55,9 @@ def login():
             flash('Неверное имя пользователя или пароль.')
 
     return render_template('login.html')
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('username', None)
+    flash('Вы вышли из системы.')
+    return redirect(url_for('index'))
