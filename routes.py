@@ -164,3 +164,25 @@ def all_trips():
     # Получаем все путешествия, сортируем по дате создания (новые сверху)
     trips = Trip.query.order_by(Trip.created_at.desc()).all()
     return render_template('all_trips.html', trips=trips)
+from flask import request
+
+@app.route('/all_trips')
+def all_trips():
+    page = request.args.get('page', 1, type=int)
+    author_filter = request.args.get('author', '', type=str)
+
+    query = Trip.query
+
+    if author_filter:
+        query = query.join(User).filter(User.username.contains(author_filter))
+
+    trips = query.order_by(Trip.created_at.desc()).paginate(
+        page=page, per_page=9, error_out=False
+    )
+
+    return render_template(
+        'all_trips.html',
+        trips=trips.items,
+        pagination=trips,
+        author_filter=author_filter
+    )
