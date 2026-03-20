@@ -1,0 +1,54 @@
+Рекомендации по устранению выявленных ошибок и улучшению системы
+1. Обработка ошибок JSON
+Проблема: при парсинге JSON могут возникать ошибки, если данные повреждены или поле пустое.
+
+Решение: создать универсальную функцию для безопасного парсинга JSON:
+def safe_json_loads(json_string, default=None):
+    if default is None:
+        default = []
+    try:
+        if json_string and json_string.strip():
+            return json.loads(json_string)
+        else:
+            return default
+    except (json.JSONDecodeError, TypeError):
+        return default
+
+
+2. Валидация входных данных
+Проблемы:
+
+отрицательные значения стоимости;
+
+слишком длинные названия мест;
+
+пустые строки в списках.
+
+Решения:
+
+В маршруте add_trip / edit_trip:
+# Валидация стоимости
+cost = float(request.form.get('cost', 0))
+if cost < 0:
+    flash('Стоимость не может быть отрицательной.')
+    return render_template(...)
+
+# Валидация мест
+cultural_heritage_clean = []
+for site in cultural_heritage:
+    site_clean = site.strip()
+    if site_clean and len(site_clean) <= 200:  # ограничение длины
+        cultural_heritage_clean.append(site_clean)
+
+
+3. Улучшение обработки изображений
+Проблема: ошибки при удалении старого файла, если он отсутствует.
+
+Решение: добавить проверку существования файла:
+if trip.image_filename:
+    old_path = os.path.join(app.config['UPLOAD_FOLDER'], trip.image_filename)
+    if os.path.exists(old_path):
+        try:
+            os.remove(old_path)
+        except OSError as e:
+            app.logger.error(f"Ошибка удаления файла {old_path}: {e}")
