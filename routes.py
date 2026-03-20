@@ -144,3 +144,18 @@ def edit_trip(trip_id):
         return redirect(url_for('my_trips'))
 
     return render_template('edit_trip.html', trip=trip)
+@app.route('/delete_trip/<int:trip_id>')
+def delete_trip(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+    if trip.user_id != session['user_id']:
+        flash('У вас нет прав для удаления этого путешествия.')
+    else:
+        # Удаляем файл изображения, если он есть
+        if trip.image_filename:
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], trip.image_filename)
+            if os.path.exists(image_path):
+                os.remove(image_path)
+        db.session.delete(trip)
+        db.session.commit()
+        flash('Путешествие удалено.')
+    return redirect(url_for('my_trips'))
