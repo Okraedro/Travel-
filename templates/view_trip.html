@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ trip.title }} — Дневник путешествий{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card mb-4 trip-card">
+            {% if trip.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' + trip.image_filename) }}"
+                     class="card-img-top trip-image" alt="{{ trip.title }}">
+            {% endif %}
+
+            <div class="card-body">
+                <h1 class="card-title">{{ trip.title }}</h1>
+                <p class="text-muted">Автор: {{ trip.user.username }} |
+                    Добавлено: {{ trip.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+
+                <div class="mb-4">
+                    {{ trip.description|safe }}
+        </div>
+
+        {% if trip.cost %}
+            <p><strong>Стоимость:</strong> {{ trip.cost }} руб.</p>
+        {% endif %}
+
+        {% if trip.latitude and trip.longitude %}
+            <div class="mb-3">
+                <strong>Местоположение:</strong>
+                <div id="trip-map" style="height: 300px; border: 1px solid #ddd;"></div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="card-footer">
+        <a href="{{ url_for('all_trips') }}" class="btn btn-outline-secondary">Назад к списку</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Инициализация карты для отдельного путешествия
+  const tripMap = L.map('trip-map').setView([{{ trip.latitude }}, {{ trip.longitude }}], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(tripMap);
+
+  L.marker([{{ trip.latitude }}, {{ trip.longitude }}]).addTo(tripMap)
+    .bindPopup('{{ trip.title }}')
+    .openPopup();
+</script>
+{% endblock %}
