@@ -159,3 +159,8 @@ def delete_trip(trip_id):
         db.session.commit()
         flash('Путешествие удалено.')
     return redirect(url_for('my_trips'))
+@app.route('/all_trips')
+def all_trips():
+    # Получаем все путешествия, сортируем по дате создания (новые сверху)
+    trips = Trip.query.order_by(Trip.created_at.desc()).all()
+    return render_template('all_trips.html', trips=trips)
