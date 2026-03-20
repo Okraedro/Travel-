@@ -28,9 +28,12 @@ class Trip(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     latitude = db.Column(db.Float)      # геопозиция
     longitude = db.Column(db.Float)     # геопозиция
-    cost = db.Column(db.Float)         # стоимость путешествия
-    image_filename = db.Column(db.String(255))  # имя файла фото
+    cost = db.Column(db.Float, default=0.0)  # Стоимость путешествия
+    cultural_heritage_sites = db.Column(db.Text)  # Места культурного наследия (JSON-строка или список)
+    places_to_visit = db.Column(db.Text)  # Места для посещения (JSON-строка или список)
+
+
+    image_filename = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=db.func.now())
 
     user = db.relationship('User', backref=db.backref('trips', lazy=True))
-
