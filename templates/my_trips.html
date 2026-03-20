@@ -1,1 +1,56 @@
+{% extends "base.html" %}
+
+
+{% block title %}Мои путешествия — Дневник путешествий{% endblock %}
+
+{% block content %}
+<h2>Мои путешествия</h2>
+
+<a href="{{ url_for('add_trip') }}" class="btn btn-success mb-3">+ Добавить новое путешествие</a>
+
+{% if trips %}
+    <div class="row">
+        {% for trip in trips %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    {% if trip.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' + trip.image_filename) }}"
+                     class="card-img-top" alt="{{ trip.title }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+                <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"
+             style="height: 200px;">Фото не загружено</div>
+            {% endif %}
+
+            <div class="card-body">
+                <h5 class="card-title">{{ trip.title }}</h5>
+                <p class="card-text">{{ trip.description|truncate(100) }}</p>
+                {% if trip.cost %}
+                    <p><strong>Стоимость:</strong> {{ trip.cost }} руб.</p>
+                {% endif %}
+                {% if trip.latitude and trip.longitude %}
+                    <p><strong>Местоположение:</strong>
+                <a href="https://www.openstreetmap.org/?mlat={{ trip.latitude }}&mlon={{ trip.longitude }}#map=12/{{ trip.latitude }}/{{ trip.longitude }}"
+                   target="_blank">Посмотреть на карте</a></p>
+                {% endif %}
+                <p class="text-muted">
+                    Добавлено: {{ trip.created_at.strftime('%d.%m.%Y %H:%M') }}
+                </p>
+            </div>
+
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{{ url_for('edit_trip', trip_id=trip.id) }}" class="btn btn-sm btn-outline-primary">Редактировать</a>
+                <a href="{{ url_for('delete_trip', trip_id=trip.id) }}"
+                   class="btn btn-sm btn-outline-danger"
+                   onclick="return confirm('Вы уверены, что хотите удалить это путешествие?')">Удалить</a>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% else %}
+    <div class="alert alert-info">
+        У вас пока нет записанных путешествий. <a href="{{ url_for('add_trip') }}">Добавьте первое!</a>
+    </div>
+{% endif %}
+{% endblock %}
 
