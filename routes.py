@@ -190,3 +190,40 @@ def all_trips():
 def view_trip(trip_id):
     trip = Trip.query.get_or_404(trip_id)
     return render_template('view_trip.html', trip=trip)
+@app.route('/add_trip', methods=['GET', 'POST'])
+def add_trip():
+    if 'user_id' not in session:
+        flash('Для добавления путешествия необходимо войти в систему.')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        title = request.form['title'].strip()
+        description = request.form['description']
+        cost = float(request.form.get('cost', 0))
+
+        # Обработка мест культурного наследия
+        cultural_heritage = request.form.getlist('cultural_heritage[]')
+        cultural_heritage_clean = [site.strip() for site in cultural_heritage if site.strip()]
+
+
+        # Обработка мест для посещения
+        places_to_visit = request.form.getlist('places_to_visit[]')
+        places_to_visit_clean = [place.strip() for place in places_to_visit if place.strip()]
+
+        # Создание записи о путешествии
+        trip = Trip(
+            title=title,
+            description=description,
+            user_id=session['user_id'],
+            cost=cost,
+            cultural_heritage_sites=json.dumps(cultural_heritage_clean, ensure_ascii=False),
+            places_to_visit=json.dumps(places_to_visit_clean, ensure_ascii=False),
+            image_filename=image_filename  # как в предыдущей реализации
+        )
+        db.session.add(trip)
+        db.session.commit()
+
+        flash('Путешествие успешно добавлено!')
+        return redirect(url_for('my_trips'))
+
+    return render_template('add_trip.html')
