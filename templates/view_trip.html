@@ -40,6 +40,32 @@
 
 {% block scripts %}
 <script>
+    {% if trip.cost > 0 %}
+    <p><strong>Стоимость путешествия:</strong> {{ trip.cost }} руб.</p>
+{% endif %}
+
+{% if trip.cultural_heritage_sites %}
+    <div class="mb-4">
+        <h5>Места культурного наследия:</h5>
+        <ul class="list-group">
+            {% for site in json.loads(trip.cultural_heritage_sites) %}
+                <li class="list-group-item">{{ site }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{% if trip.places_to_visit %}
+    <div class="mb-4">
+        <h5>Рекомендуемые места для посещения:</h5>
+        <ul class="list-group">
+            {% for place in json.loads(trip.places_to_visit) %}
+                <li class="list-group-item">{{ place }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
   // Инициализация карты для отдельного путешествия
   const tripMap = L.map('trip-map').setView([{{ trip.latitude }}, {{ trip.longitude }}], 12);
 
