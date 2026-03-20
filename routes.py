@@ -104,3 +104,5 @@ def add_trip():
         return redirect(url_for('my_trips'))
 
     return render_template('add_trip.html')
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
