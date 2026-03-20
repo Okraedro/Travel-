@@ -1,28 +1,32 @@
-
 {% extends "base.html" %}
 
 {% block title %}Все путешествия — Дневник путешествий{% endblock %}
 
-
 {% block content %}
-<h2>Путешествия пользователей</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Путешествия пользователей</h2>
+    <form method="GET" class="d-flex">
+        <input type="text" class="form-control me-2" name="author"
+               placeholder="Поиск по автору" value="{{ author_filter }}">
+        <button type="submit" class="btn btn-outline-secondary">Найти</button>
+    </form>
+</div>
 
-
-<p class="text-muted">Всего записей: {{ trips|length }}</p>
+<p class="text-muted">Всего записей: {{ pagination.total }}</p>
 
 {% if trips %}
     <div class="row">
         {% for trip in trips %}
+            <!-- Карточка путешествия (как выше) -->
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100">
                     {% if trip.image_filename %}
                 <img src="{{ url_for('static', filename='uploads/' + trip.image_filename) }}"
-                     class="card-img-top" alt="{{ trip.title }}" style="height: 200px; object-fit: cover;">
+             class="card-img-top" alt="{{ trip.title }}" style="height: 200px; object-fit: cover;">
             {% else %}
                 <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center"
              style="height: 200px;">Фото не загружено</div>
             {% endif %}
-
             <div class="card-body">
                 <h5 class="card-title">{{ trip.title }}</h5>
                 <p class="card-text">{{ trip.description|truncate(100) }}</p>
@@ -36,16 +40,36 @@
                    target="_blank">Посмотреть на карте</a></p>
                 {% endif %}
                 <p class="text-muted">
-                    Добавлено: {{ trip.created_at.strftime('%d.%m.%Y %H:%M') }}
-                </p>
-            </div>
-        </div>
+            Добавлено: {{ trip.created_at.strftime('%d.%m.%Y %H:%M') }}
+        </p>
     </div>
+</div>
 {% endfor %}
 </div>
+
+<!-- Пагинация -->
+{% if pagination.has_prev or pagination.has_next %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('all_trips', page=pagination.prev_num, author=author_filter) }}">Назад</a>
+        </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Страница {{ pagination.page }} из {{ pagination.pages }}</span>
+            </li>
+            {% if pagination.has_next %}
+                <li class="page-item">
+            <a class="page-link" href="{{ url_for('all_trips', page=pagination.next_num, author=author_filter) }}">Вперед</a>
+        </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
 {% else %}
     <div class="alert alert-info">
-        Пока нет записанных путешествий. <a href="{{ url_for('add_trip') }}">Добавьте первое!</a>
+        По вашему запросу ничего не найдено. Попробуйте другой поиск или <a href="{{ url_for('add_trip') }}">добавьте своё путешествие</a>.
     </div>
 {% endif %}
 {% endblock %}
