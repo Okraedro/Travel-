@@ -121,12 +121,23 @@ def edit_trip(trip_id):
         flash('У вас нет прав для редактирования этого путешествия.')
         return redirect(url_for('my_trips'))
 
+
     if request.method == 'POST':
         trip.title = request.form['title'].strip()
         trip.description = request.form['description']
-        trip.cost = float(request.form['cost']) if request.form.get('cost') else None
+        trip.cost = float(request.form.get('cost', 0))
 
-        # Обработка нового изображения
+        # Обработка мест культурного наследия
+        cultural_heritage = request.form.getlist('cultural_heritage[]')
+        cultural_heritage_clean = [site.strip() for site in cultural_heritage if site.strip()]
+        trip.cultural_heritage_sites = json.dumps(cultural_heritage_clean, ensure_ascii=False)
+
+        # Обработка мест для посещения
+        places_to_visit = request.form.getlist('places_to_visit[]')
+        places_to_visit_clean = [place.strip() for place in places_to_visit if place.strip()]
+        trip.places_to_visit = json.dumps(places_to_visit_clean, ensure_ascii=False)
+
+        # Обработка изображения (как в предыдущей реализации)
         image_file = request.files.get('image')
         if image_file and allowed_file(image_file.filename):
             # Удаляем старое фото, если оно есть
@@ -143,7 +154,19 @@ def edit_trip(trip_id):
         flash('Путешествие успешно обновлено!')
         return redirect(url_for('my_trips'))
 
-    return render_template('edit_trip.html', trip=trip)
+    # Для GET-запроса передаём данные в шаблон
+    try:
+        cultural_sites = json.loads(trip.cultural_heritage_sites) if trip.cultural_heritage_sites else []
+    except (TypeError, json.JSONDecodeError):
+        cultural_sites = []
+
+    try:
+        places = json.loads(trip.places_to_visit) if trip.places_to_visit else []
+    except (TypeError, json.JSONDecodeError):
+        places = []
+
+    return render_template('edit_trip.html', trip=trip, cultural_sites=cultural_sites, places=places)
+
 @app.route('/delete_trip/<int:trip_id>')
 def delete_trip(trip_id):
     trip = Trip.query.get_or_404(trip_id)
